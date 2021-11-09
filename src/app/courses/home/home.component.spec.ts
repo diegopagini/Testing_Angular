@@ -1,41 +1,24 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  flush,
-  flushMicrotasks,
-  TestBed,
-  tick,
-  waitForAsync,
-} from "@angular/core/testing";
-import { CoursesModule } from "../courses.module";
 import { DebugElement } from "@angular/core";
-
-import { HomeComponent } from "./home.component";
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from "@angular/common/http/testing";
-import { CoursesService } from "../services/courses.service";
-import { HttpClient } from "@angular/common/http";
-import { COURSES } from "../../../../server/db-data";
-import { setupCourses } from "../common/setup-test-data";
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
-import { of } from "rxjs";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { click } from "../common/test-utils";
+import { of } from "rxjs";
+import { setupCourses } from "../common/setup-test-data";
+import { CoursesModule } from "../courses.module";
+import { CoursesService } from "../services/courses.service";
+import { HomeComponent } from "./home.component";
 
+// Smart or Container components
 describe("HomeComponent", () => {
   let fixture: ComponentFixture<HomeComponent>;
   let component: HomeComponent;
   let el: DebugElement;
   let coursesService: any;
-
   const beginnerCourses = setupCourses().filter(
-    (course) => course.category == "BEGINNER"
+    (course) => course.category === "BEGINNER"
   );
-
   const advancedCourses = setupCourses().filter(
-    (course) => course.category == "ADVANCED"
+    (course) => course.category === "ADVANCED"
   );
 
   beforeEach(
@@ -46,14 +29,20 @@ describe("HomeComponent", () => {
 
       TestBed.configureTestingModule({
         imports: [CoursesModule, NoopAnimationsModule],
-        providers: [{ provide: CoursesService, useValue: coursesServiceSpy }],
+        providers: [
+          {
+            provide: CoursesService,
+            useValue: coursesServiceSpy,
+          },
+        ],
       })
         .compileComponents()
         .then(() => {
+          // Assign the component to local variable
           fixture = TestBed.createComponent(HomeComponent);
           component = fixture.componentInstance;
           el = fixture.debugElement;
-          coursesService = TestBed.get(CoursesService);
+          coursesService = TestBed.inject<CoursesService>(CoursesService);
         });
     })
   );
@@ -64,89 +53,61 @@ describe("HomeComponent", () => {
 
   it("should display only beginner courses", () => {
     coursesService.findAllCourses.and.returnValue(of(beginnerCourses));
-
+    // detectChanges() is necessary to update the view
     fixture.detectChanges();
 
     const tabs = el.queryAll(By.css(".mat-tab-label"));
-
+    // Expect to see only one tab
     expect(tabs.length).toBe(1, "Unexpected number of tabs found");
   });
 
   it("should display only advanced courses", () => {
     coursesService.findAllCourses.and.returnValue(of(advancedCourses));
-
+    // detectChanges() is necessary to update the view
     fixture.detectChanges();
 
     const tabs = el.queryAll(By.css(".mat-tab-label"));
-
+    // Expect to see only one tab
     expect(tabs.length).toBe(1, "Unexpected number of tabs found");
   });
 
-  it("should display both tabs", () => {
+  it("should display only both tabs", () => {
     coursesService.findAllCourses.and.returnValue(of(setupCourses()));
-
+    // detectChanges() is necessary to update the view
     fixture.detectChanges();
 
     const tabs = el.queryAll(By.css(".mat-tab-label"));
-
-    expect(tabs.length).toBe(2, "Expected to find 2 tabs");
+    // Expect to see two tabs
+    expect(tabs.length).toBe(2, "Unexpected number of tabs found");
   });
 
-  it("should display advanced courses when tab clicked - fakeAsync", fakeAsync(() => {
+  // ASYNC TEST
+  it("should display advanced courses wheb tab clicked", (done: DoneFn) => {
     coursesService.findAllCourses.and.returnValue(of(setupCourses()));
 
     fixture.detectChanges();
 
     const tabs = el.queryAll(By.css(".mat-tab-label"));
 
-    click(tabs[1]);
+    tabs[1].nativeElement.click();
 
     fixture.detectChanges();
 
-    flush();
+    setTimeout(() => {
+      const cardTitles = el.queryAll(
+        By.css(".mat-tab-body-active .mat-card-title")
+      ); // Expect to see more than 0 cards
+      expect(cardTitles.length).toBeGreaterThan(
+        0,
+        "Unexpected number of courses found"
+      );
 
-    const cardTitles = el.queryAll(
-      By.css(".mat-tab-body-active .mat-card-title")
-    );
-
-    console.log(cardTitles);
-
-    expect(cardTitles.length).toBeGreaterThan(0, "Could not find card titles");
-
-    expect(cardTitles[0].nativeElement.textContent).toContain(
-      "Angular Security Course"
-    );
-  }));
-
-  xit(
-    "should display advanced courses when tab clicked - async",
-    waitForAsync(() => {
-      coursesService.findAllCourses.and.returnValue(of(setupCourses()));
-
-      fixture.detectChanges();
-
-      const tabs = el.queryAll(By.css(".mat-tab-label"));
-
-      click(tabs[1]);
-
-      fixture.detectChanges();
-
-      fixture.whenStable().then(() => {
-        console.log("called whenStable() ");
-
-        const cardTitles = el.queryAll(
-          By.css(".mat-tab-body-active .mat-card-title")
-        );
-
-        expect(cardTitles.length).toBeGreaterThan(
-          0,
-          "Could not find card titles"
-        );
-
-        expect(cardTitles[0].nativeElement.textContent).toContain(
-          "Angular Security Course"
-        );
-      });
-    })
-  );
+      // Expect to se the first card to be an advanced course called "Angular Security Course"
+      expect(cardTitles[0].nativeElement.textContent).toContain(
+        "Angular Security Course"
+      );
+      // done() is necessary to tell Jasmine that the test is done
+      done();
+    }, 500);
+  });
 });

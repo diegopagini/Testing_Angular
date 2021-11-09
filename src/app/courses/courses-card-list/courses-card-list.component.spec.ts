@@ -43,7 +43,7 @@ describe("CoursesCardListComponent", () => {
 
     fixture.detectChanges(); // Trigger the change detection
 
-    console.log(el.nativeElement.outerHTML); // This way is use to debug the html
+    // console.log(el.nativeElement.outerHTML); // This way is use to debug the html
 
     const cards = el.queryAll(By.css(".course-card")); // Get all elements with the class course-card
     // Expect that exist at least one course card
