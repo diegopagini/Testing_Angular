@@ -1,5 +1,10 @@
 import { DebugElement } from "@angular/core";
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  waitForAsync,
+} from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { of } from "rxjs";
@@ -93,6 +98,9 @@ describe("HomeComponent", () => {
 
     fixture.detectChanges();
 
+    // flush is the same to use setTimeout, but it is better to use it
+    // flush();
+
     setTimeout(() => {
       const cardTitles = el.queryAll(
         By.css(".mat-tab-body-active .mat-card-title")
@@ -108,6 +116,6 @@ describe("HomeComponent", () => {
       );
       // done() is necessary to tell Jasmine that the test is done
       done();
-    }, 500);
+    }, 1000);
   });
 });
