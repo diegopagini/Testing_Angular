@@ -1,63 +1,41 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { CoursesCardListComponent } from "./courses-card-list.component";
 import { CoursesModule } from "../courses.module";
-import { COURSES } from "../../../../server/db-data";
-import { DebugElement } from "@angular/core";
-import { By } from "@angular/platform-browser";
-import { sortCoursesBySeqNo } from "../home/sort-course-by-seq";
-import { Course } from "../model/course";
-import { setupCourses } from "../common/setup-test-data";
-import { Test } from "tslint";
+import { CoursesCardListComponent } from "./courses-card-list.component";
 
+// Presentational component tests
 describe("CoursesCardListComponent", () => {
+  // Create a instance of the component
   let component: CoursesCardListComponent;
+  // Create a instance of the component fixture
   let fixture: ComponentFixture<CoursesCardListComponent>;
-  let el: DebugElement;
 
   beforeEach(
+    // waitForAsync() is used to wait for the async tasks to complete, can't use async/await
     waitForAsync(() => {
       TestBed.configureTestingModule({
+        // Imports the module ho has all the component we want to test and directives on it
         imports: [CoursesModule],
       })
-        .compileComponents()
+        .compileComponents() // compile template and css asynchronously
+        // Is no need to use awit, because we are not using async/await
         .then(() => {
+          // Create the component instance and initialize it with the fixture before each test
           fixture = TestBed.createComponent(CoursesCardListComponent);
           component = fixture.componentInstance;
-          el = fixture.debugElement;
         });
     })
   );
 
   it("should create the component", () => {
+    // Assert that the component is created
     expect(component).toBeTruthy();
   });
 
   it("should display the course list", () => {
-    component.courses = setupCourses();
-
-    fixture.detectChanges();
-
-    const cards = el.queryAll(By.css(".course-card"));
-
-    expect(cards).toBeTruthy("Could not find cards");
-    expect(cards.length).toBe(12, "Unexpected number of courses");
+    pending();
   });
 
   it("should display the first course", () => {
-    component.courses = setupCourses();
-
-    fixture.detectChanges();
-
-    const course = component.courses[0];
-
-    const card = el.query(By.css(".course-card:first-child")),
-      title = card.query(By.css("mat-card-title")),
-      image = card.query(By.css("img"));
-
-    expect(card).toBeTruthy("Could not find course card");
-
-    expect(title.nativeElement.textContent).toBe(course.titles.description);
-
-    expect(image.nativeElement.src).toBe(course.iconUrl);
+    pending();
   });
 });

@@ -2,7 +2,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   ViewEncapsulation,
 } from "@angular/core";
@@ -15,8 +14,9 @@ import { filter, tap } from "rxjs/operators";
   selector: "courses-card-list",
   templateUrl: "./courses-card-list.component.html",
   styleUrls: ["./courses-card-list.component.css"],
+  encapsulation: ViewEncapsulation.None,
 })
-export class CoursesCardListComponent implements OnInit {
+export class CoursesCardListComponent {
   @Input()
   courses: Course[];
 
@@ -24,8 +24,6 @@ export class CoursesCardListComponent implements OnInit {
   courseEdited = new EventEmitter();
 
   constructor(private dialog: MatDialog) {}
-
-  ngOnInit() {}
 
   editCourse(course: Course) {
     const dialogConfig = new MatDialogConfig();
