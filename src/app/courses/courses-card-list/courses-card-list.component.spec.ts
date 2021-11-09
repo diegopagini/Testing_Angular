@@ -53,6 +53,19 @@ describe("CoursesCardListComponent", () => {
   });
 
   it("should display the first course", () => {
-    pending();
+    component.courses = setupCourses();
+    fixture.detectChanges();
+    // First course on the list of courses
+    const course = component.courses[0];
+    // Get the first course card
+    const card = el.query(By.css(".course-card:first-child"));
+    const title = card.query(By.css("mat-card-title"));
+    const image = card.query(By.css("img"));
+
+    expect(card).toBeTruthy("Could not find first course card");
+    // Assert that the title of the first course card is equal to course.titles.description
+    expect(title.nativeElement.textContent).toBe(course.titles.description);
+    // Assert that the image of the first course card is equal to course.imageUrl
+    expect(image.nativeElement.src).toBe(course.iconUrl);
   });
 });
