@@ -28,14 +28,10 @@ describe("Home Page", () => {
 
     cy.get(".mat-tab-body-active .mat-card-title")
       .its("length") // its() method is used to get the length of the element
-      .should("be.gt", 1);
-    -(
-      // should() method is used to check the condition
+      .should("be.gt", 1); // should() method is used to check the condition
 
-      cy
-        .get(".mat-tab-body-active .mat-card-title")
-        .first() // first() method is used to get the first element
-        .should("contain", "Angular Security Course")
-    ); // should() method is used to check the condition
+    cy.get(".mat-tab-body-active .mat-card-title")
+      .first() // first() method is used to get the first element
+      .should("contain", "Angular Security Course"); // should() method is used to check the condition
   });
 });
